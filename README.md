@@ -20,7 +20,7 @@ This guide explains how to automatically start and stop EC2 instances using AWS 
 We will create a role `Ec2_lambda` with permissions to start and stop specific EC2 instances.
 
 ### **Step 1 – Create IAM Policy**
-Name: **`Lambda_statandstop`**
+**Name:** `Lambda_statandstop`
 
 ```json
 {
@@ -40,26 +40,27 @@ Name: **`Lambda_statandstop`**
         }
     ]
 }
-Note: Replace the instance ARN values with your own EC2 instance ARNs.
+```
 
-Step 2 – Create IAM Role
-Create a role named Ec2_lambda.
+> **Note:** Replace the `instance ARN` values with your own EC2 instance ARNs.
 
-Attach the policy Lambda_statandstop created earlier.
+---
 
-Task 3: Create Lambda Functions
-A. Lambda Function – Stop EC2 Instance
-Create a new Lambda function named RD_Chatwoot_dev-stop.
+### **Step 2 – Create IAM Role**
+1. Create a role named **`Ec2_lambda`**.
+2. Attach the policy **`Lambda_statandstop`** created earlier.
 
-Runtime: Python 3.11.
+---
 
-Permissions: Assign the Ec2_lambda role.
+## **Task 3: Create Lambda Functions**
 
-Add the following code:
+### **A. Lambda Function – Stop EC2 Instance**
+1. Create a new Lambda function named **`RD_Chatwoot_dev-stop`**.
+2. Runtime: **Python 3.11**.
+3. Permissions: Assign the **`Ec2_lambda`** role.
+4. Add the following code:
 
-python
-Copy
-Edit
+```python
 import boto3
 region = 'ap-southeast-1'
 instances = ['i-02d0f769b0f70ff47']
@@ -68,30 +69,26 @@ ec2 = boto3.client('ec2', region_name=region)
 def lambda_handler(event, context):
     ec2.stop_instances(InstanceIds=instances)
     print('Stopped your instances: ' + str(instances))
-Note:
+```
 
-Change region and instances values as required.
+> **Note:**
+> - Change `region` and `instances` values as required.
+> - Multiple instances can be listed as:
+>   ```python
+>   instances = ['i-03ed8bb3a2e2ffb47', 'i-061e8e8245a3f1e15']
+>   ```
 
-Multiple instances can be listed as:
+5. Deploy and test the function to verify it stops the instance.
 
-python
-Copy
-Edit
-instances = ['i-03ed8bb3a2e2ffb47', 'i-061e8e8245a3f1e15']
-Deploy and test the function to verify it stops the instance.
+---
 
-B. Lambda Function – Start EC2 Instance
-Create a new Lambda function named RD_Chatwoot_dev-start.
+### **B. Lambda Function – Start EC2 Instance**
+1. Create a new Lambda function named **`RD_Chatwoot_dev-start`**.
+2. Runtime: **Python 3.11**.
+3. Permissions: Assign the **`Ec2_lambda`** role.
+4. Add the following code:
 
-Runtime: Python 3.11.
-
-Permissions: Assign the Ec2_lambda role.
-
-Add the following code:
-
-python
-Copy
-Edit
+```python
 import boto3
 region = 'ap-southeast-1'
 instances = ['i-02d0f769b0f70ff47']
@@ -100,69 +97,60 @@ ec2 = boto3.client('ec2', region_name=region)
 def lambda_handler(event, context):
     ec2.start_instances(InstanceIds=instances)
     print('Started your instances: ' + str(instances))
-Note:
-It's best practice to create separate functions for different sets of instances instead of starting multiple at once.
+```
 
-Deploy and test the function to verify it starts the instance.
+> **Note:**  
+> It's best practice to create separate functions for different sets of instances instead of starting multiple at once.
 
-Task 4: Create EventBridge Rules in Lambda
-We will trigger Lambda functions via EventBridge rules directly from Lambda's Add Trigger option.
+5. Deploy and test the function to verify it starts the instance.
 
-Rule for Stop Function
-Open Lambda function RD_Chatwoot_dev-stop.
+---
 
-Click Add Trigger → EventBridge.
+## **Task 4: Create EventBridge Rules in Lambda**
+We will trigger Lambda functions via **EventBridge** rules directly from Lambda's **Add Trigger** option.
 
-Create a new rule:
+---
 
-Name: RD_Chatwoot_dev-stop
+### **Rule for Stop Function**
+1. Open Lambda function **`RD_Chatwoot_dev-stop`**.
+2. Click **Add Trigger** → **EventBridge**.
+3. Create a new rule:
+   - **Name:** `RD_Chatwoot_dev-stop`
+   - **Description:** `RD_Chatwoot_dev-stop at 9:30 PM IST`
+   - **Rule type:** Schedule expression
+   - **Cron expression (UTC):**
+     ```text
+     cron(0 16 ? * MON-FRI *)
+     ```
+4. Save.
 
-Description: RD_Chatwoot_dev-stop at 9:30 PM IST
+---
 
-Rule type: Schedule expression
+### **Rule for Start Function**
+1. Open Lambda function **`RD_Chatwoot_dev-start`**.
+2. Click **Add Trigger** → **EventBridge**.
+3. Create a new rule:
+   - **Name:** `RD_Chatwoot_dev-start`
+   - **Description:** `RD_Chatwoot_dev-start at 6:30 AM IST`
+   - **Rule type:** Schedule expression
+   - **Cron expression (UTC):**
+     ```text
+     cron(0 1 ? * MON-FRI *)
+     ```
+   - Example for 9:00 AM IST:
+     ```text
+     cron(30 3 ? * * *)
+     ```
+4. Save.
 
-Cron expression (UTC):
+---
 
-scss
-Copy
-Edit
-cron(0 16 ? * MON-FRI *)
-Save.
+## **Cron Time Conversion**
+EventBridge cron expressions use **UTC time**. Convert your IST schedule to UTC before setting rules.
 
-Rule for Start Function
-Open Lambda function RD_Chatwoot_dev-start.
+---
 
-Click Add Trigger → EventBridge.
-
-Create a new rule:
-
-Name: RD_Chatwoot_dev-start
-
-Description: RD_Chatwoot_dev-start at 6:30 AM IST
-
-Rule type: Schedule expression
-
-Cron expression (UTC):
-
-scss
-Copy
-Edit
-cron(0 1 ? * MON-FRI *)
-Example for 9:00 AM IST:
-
-scss
-Copy
-Edit
-cron(30 3 ? * * *)
-Save.
-
-Cron Time Conversion
-EventBridge cron expressions use UTC time. Convert your IST schedule to UTC before setting rules.
-
-Summary
-IAM Role Ec2_lambda allows Lambda to start/stop EC2 instances.
-
-Two Lambda functions are created — one for start, one for stop.
-
-EventBridge rules trigger these Lambda functions on schedule.
-
+## **Summary**
+- IAM Role `Ec2_lambda` allows Lambda to start/stop EC2 instances.
+- Two Lambda functions are created — one for **start**, one for **stop**.
+- EventBridge rules trigger these Lambda functions on schedule.
