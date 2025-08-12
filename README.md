@@ -55,7 +55,7 @@ We will create a role `Ec2_lambda` with permissions to start and stop specific E
 ## **Task 3: Create Lambda Functions**
 
 ### **A. Lambda Function – Stop EC2 Instance**
-1. Create a new Lambda function named **`RD_Chatwoot_dev-stop`**.
+1. Create a new Lambda function named **`Chatwoot_dev-stop`**.
 2. Runtime: **Python 3.11**.
 3. Permissions: Assign the **`Ec2_lambda`** role.
 4. Add the following code:
@@ -83,7 +83,7 @@ def lambda_handler(event, context):
 ---
 
 ### **B. Lambda Function – Start EC2 Instance**
-1. Create a new Lambda function named **`RD_Chatwoot_dev-start`**.
+1. Create a new Lambda function named **`Chatwoot_dev-start`**.
 2. Runtime: **Python 3.11**.
 3. Permissions: Assign the **`Ec2_lambda`** role.
 4. Add the following code:
@@ -112,11 +112,11 @@ We will trigger Lambda functions via **EventBridge** rules directly from Lambda'
 ---
 
 ### **Rule for Stop Function**
-1. Open Lambda function **`RD_Chatwoot_dev-stop`**.
+1. Open Lambda function **`Chatwoot_dev-stop`**.
 2. Click **Add Trigger** → **EventBridge**.
 3. Create a new rule:
-   - **Name:** `RD_Chatwoot_dev-stop`
-   - **Description:** `RD_Chatwoot_dev-stop at 9:30 PM IST`
+   - **Name:** `Chatwoot_dev-stop`
+   - **Description:** `Chatwoot_dev-stop at 9:30 PM IST`
    - **Rule type:** Schedule expression
    - **Cron expression (UTC):**
      ```text
@@ -127,11 +127,11 @@ We will trigger Lambda functions via **EventBridge** rules directly from Lambda'
 ---
 
 ### **Rule for Start Function**
-1. Open Lambda function **`RD_Chatwoot_dev-start`**.
+1. Open Lambda function **`Chatwoot_dev-start`**.
 2. Click **Add Trigger** → **EventBridge**.
 3. Create a new rule:
-   - **Name:** `RD_Chatwoot_dev-start`
-   - **Description:** `RD_Chatwoot_dev-start at 6:30 AM IST`
+   - **Name:** `Chatwoot_dev-start`
+   - **Description:** `Chatwoot_dev-start at 6:30 AM IST`
    - **Rule type:** Schedule expression
    - **Cron expression (UTC):**
      ```text
