@@ -34,8 +34,8 @@ We will create a role `Ec2_lambda` with permissions to start and stop specific E
                 "ec2:StopInstances"
             ],
             "Resource": [
-                "arn:aws:ec2:ap-southeast-1:707728974508:instance/i-0f8dfb96af197ca2b",
-                "arn:aws:ec2:ap-southeast-1:707728974508:instance/i-0e19d1db3f8e3782c"
+                "arn:aws:ec2:ap-southeast-1:73472897498072:instance/i-0f8dyrhsofb96af197ca2b",
+                "arn:aws:ec2:ap-southeast-1:73472897498072:instance/i-0e19d178hgrdb3f8e3782c"
             ]
         }
     ]
@@ -63,7 +63,7 @@ We will create a role `Ec2_lambda` with permissions to start and stop specific E
 ```python
 import boto3
 region = 'ap-southeast-1'
-instances = ['i-02d0f769b0f70ff47']
+instances = ['i-02d0f769sjhfb0f70ff47']
 ec2 = boto3.client('ec2', region_name=region)
 
 def lambda_handler(event, context):
@@ -75,7 +75,7 @@ def lambda_handler(event, context):
 > - Change `region` and `instances` values as required.
 > - Multiple instances can be listed as:
 >   ```python
->   instances = ['i-03ed8bb3a2e2ffb47', 'i-061e8e8245a3f1e15']
+>   instances = ['i-03ed8bb3ahfjks2e2ffb47', 'i-061e8e8298hfg45a3f1e15']
 >   ```
 
 5. Deploy and test the function to verify it stops the instance.
@@ -91,7 +91,7 @@ def lambda_handler(event, context):
 ```python
 import boto3
 region = 'ap-southeast-1'
-instances = ['i-02d0f769b0f70ff47']
+instances = ['i-02d0f76fjufi9b0f70ff47']
 ec2 = boto3.client('ec2', region_name=region)
 
 def lambda_handler(event, context):
